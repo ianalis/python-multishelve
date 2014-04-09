@@ -44,3 +44,7 @@ class Multishelf(collections.MutableMapping):
     def close(self):
         for d in self.dicts.values():
             d.close()
+            
+def open(*args, **kwds):
+    """Return a multishelf"""
+    return Multishelf(*args, **kwds)

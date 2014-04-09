@@ -184,6 +184,19 @@ class MultishelveTest(mox.MoxTestBase):
         
         self.db.close()
         
+class OpenTest(mox.MoxTestBase):
+    def test_open(self):
+        """Calling multishelve.open() should create a Multishelf"""
+        self.mox.StubOutWithMock(multishelve, 'Multishelf')
+        multishelve.Multishelf('test')
+        multishelve.Multishelf('test', 'r')
+        multishelve.Multishelf('test', protocol=2)
+        
+        self.mox.ReplayAll()
+        
+        multishelve.open('test')
+        multishelve.open('test', 'r')
+        multishelve.open('test', protocol=2)
         
 if __name__ == "__main__":
     unittest.main()
