@@ -22,6 +22,10 @@ class MultishelveTest(mox.MoxTestBase):
      
     def test_new(self):
         """"Opening a nonexistent multishelve should create backend shelves"""
+        self.db.close()
+        shutil.rmtree(self.db_dir)
+        self.db = multishelve.Multishelf(self.db_dir)
+        
         for letter in 'abcdefghijklmnopqrstuvwxyz1234567890#':
             self.assertTrue(os.path.exists(os.path.join(self.db_dir, 
                                                         letter+'.db')))

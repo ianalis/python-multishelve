@@ -5,6 +5,9 @@ from itertools import chain
 
 class Multishelf(collections.MutableMapping):
     def __init__(self, db_dir, flag='c', protocol=None, writeback=False):
+        if not os.path.exists(db_dir):
+            os.makedirs(db_dir)
+            
         self.dicts = {}
         for letter in 'abcdefghijklmnopqrstuvwxyz1234567890#':
             self.dicts[letter] = shelve.open(os.path.join(db_dir, letter+'.db'),
