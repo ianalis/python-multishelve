@@ -129,6 +129,35 @@ class MultishelveTest(mox.MoxTestBase):
         """len() should return number of items in all backed dicts"""
         self.assertEqual(len(self.expected), len(self.db))
         
+    def test_update(self):
+        """update() should work for ordinary dict"""
+        dict2 = {}
+        for k in 'abc1234':
+            dict2[k] = random.randint(0, 10000)
+        for _ in range(10):
+            dict2[str(random.randint(0, 10000))] = random.randint(0, 10000)
+        
+        self.db.update(dict2)
+        self.expected.update(dict2)
+        self.assertItemsEqual(self.expected.items(), self.db.items())
+        
+    def test_update_multishelve(self):
+        """update() should work for multishelve"""
+        db2_dir = tempfile.mkdtemp()
+        db2 = multishelve.Multishelf(db2_dir)
+        self.addCleanup(lambda: shutil.rmtree(db2_dir))
+        dict2 = {}
+        for k in 'abc1234':
+            dict2[k] = db2[k] = random.randint(0, 10000)
+        for _ in range(10):
+            k = str(random.randint(0, 10000))
+            dict2[k] = db2[k] = random.randint(0, 10000)
+        
+        self.maxDiff = None
+        self.db.update(db2)
+        self.expected.update(dict2)
+        self.assertItemsEqual(self.expected.items(), self.db.items())
+        
     def test_sync(self):
         """Syncing the multishelve must sync all backend shelves"""
         for key in self.db.dicts:

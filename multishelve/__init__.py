@@ -25,6 +25,15 @@ class Multishelf(collections.MutableMapping):
     def __len__(self):
         return sum(len(d) for d in self.dicts.itervalues())
     
+    def update(self, *args, **kwds):
+        if len(args) == 1 and isinstance(args[0], Multishelf):
+            # update backend shelve by backend shelve
+            for letter in 'abcdefghijklmnopqrstuvwxyz1234567890#':
+                self.dicts[letter].update(args[0].dicts[letter])
+            super(Multishelf, self).update(**kwds)
+        else:
+            super(Multishelf, self).update(*args, **kwds)
+            
     def sync(self):
         for d in self.dicts.values():
             d.sync()
