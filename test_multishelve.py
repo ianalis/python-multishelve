@@ -86,39 +86,39 @@ class MultishelveTest(mox.MoxTestBase):
         self.test_get()
         
     def test_iter(self):
-        """iter() should iterate over all backend dicts"""
+        """iter() should iterate over all backend shelves"""
         i = iter(self.db)
         self.assertNotIsInstance(i, list)
         self.assertItemsEqual(self.expected.keys(), list(i))
             
     def test_iterkeys(self):
-        """iterkeys() should return an iterator over all backend dicts keys"""
+        """iterkeys() should return an iterator over all backend shelves keys"""
         i = iter(self.db.iterkeys())
         self.assertNotIsInstance(i, list)
         self.assertItemsEqual(self.expected.keys(), list(i))
         
     def test_itervalues(self):
-        """itervalues() should return an iterator over backend dicts values"""
+        """itervalues() should return an iterator over backend shelves values"""
         i = iter(self.db.itervalues())
         self.assertNotIsInstance(i, list)
         self.assertItemsEqual(self.expected.values(), list(i))
         
     def test_iteritems(self):
-        """iteritems() should return an iterator over backend dicts items"""       
+        """iteritems() should return an iterator over backend shelves items"""       
         i = iter(self.db.iteritems())
         self.assertNotIsInstance(i, list)
         self.assertItemsEqual(self.expected.items(), list(i))
         
     def test_keys(self):
-        """keys() should return a list of all backend dicts keys"""        
+        """keys() should return a list of all backend shelves keys"""        
         self.assertItemsEqual(self.expected.keys(), self.db.keys())
         
     def test_values(self):
-        """values() should return a list of all backend dicts values"""        
+        """values() should return a list of all backend shelves values"""        
         self.assertItemsEqual(self.expected.values(), self.db.values())
                 
     def test_items(self):
-        """items() should return a list of all backend dicts items"""        
+        """items() should return a list of all backend shelves items"""        
         self.assertItemsEqual(self.expected.items(), self.db.items())
         
     def test_del(self):
@@ -130,7 +130,7 @@ class MultishelveTest(mox.MoxTestBase):
         self.assertItemsEqual(self.expected.items(), self.db.items())
         
     def test_len(self):
-        """len() should return number of items in all backed dicts"""
+        """len() should return number of items in all backed shelves"""
         self.assertEqual(len(self.expected), len(self.db))
         
     def test_update(self):
@@ -164,9 +164,9 @@ class MultishelveTest(mox.MoxTestBase):
         
     def test_sync(self):
         """Syncing the multishelve must sync all backend shelves"""
-        for key in self.db.dicts:
-            self.db.dicts[key] = self.mox.CreateMockAnything()
-        for d in self.db.dicts.values():
+        for key in self.db._shelves:
+            self.db._shelves[key] = self.mox.CreateMockAnything()
+        for d in self.db._shelves.values():
             d.sync()
             
         self.mox.ReplayAll()
@@ -175,9 +175,9 @@ class MultishelveTest(mox.MoxTestBase):
         
     def test_close(self):
         """Closing the multishelve must close all backend shelves"""
-        for key in self.db.dicts:
-            self.db.dicts[key] = self.mox.CreateMockAnything()
-        for d in self.db.dicts.values():
+        for key in self.db._shelves:
+            self.db._shelves[key] = self.mox.CreateMockAnything()
+        for d in self.db._shelves.values():
             d.close()
             
         self.mox.ReplayAll()
