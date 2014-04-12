@@ -6,6 +6,8 @@ import shelve
 import random
 import mox
 import multishelve
+from hashlib import md5
+from base64 import urlsafe_b64encode as b64encode
 
 class MultishelveTest(mox.MoxTestBase):
     def setUp(self):
@@ -26,7 +28,7 @@ class MultishelveTest(mox.MoxTestBase):
         shutil.rmtree(self.db_dir)
         self.db = multishelve.Multishelf(self.db_dir)
         
-        for letter in 'abcdefghijklmnopqrstuvwxyz1234567890#':
+        for letter in multishelve.Multishelf.letters:
             self.assertTrue(os.path.exists(os.path.join(self.db_dir, 
                                                         letter+'.db')))
             
@@ -35,7 +37,7 @@ class MultishelveTest(mox.MoxTestBase):
         self.db.close()
         
         self.mox.StubOutWithMock(shelve, 'open')
-        for _ in 'abcdefghijklmnopqrstuvwxyz1234567890#':
+        for _ in multishelve.Multishelf.letters:
             shelve.open(mox.IgnoreArg(), 'r', mox.IgnoreArg(), mox.IgnoreArg())
             
         self.mox.ReplayAll()
@@ -47,7 +49,7 @@ class MultishelveTest(mox.MoxTestBase):
         self.db.close()
         
         self.mox.StubOutWithMock(shelve, 'open')
-        for _ in 'abcdefghijklmnopqrstuvwxyz1234567890#':
+        for _ in multishelve.Multishelf.letters:
             shelve.open(mox.IgnoreArg(), mox.IgnoreArg(), 2, mox.IgnoreArg())
             
         self.mox.ReplayAll()
@@ -60,7 +62,7 @@ class MultishelveTest(mox.MoxTestBase):
         self.db.close()
         
         self.mox.StubOutWithMock(shelve, 'open')
-        for _ in 'abcdefghijklmnopqrstuvwxyz1234567890#':
+        for _ in multishelve.Multishelf.letters:
             shelve.open(mox.IgnoreArg(), mox.IgnoreArg(), mox.IgnoreArg(), True)
             
         self.mox.ReplayAll()
@@ -71,7 +73,9 @@ class MultishelveTest(mox.MoxTestBase):
         """Values must be placed in the appropriate backend shelve"""
         self.db.close()
         for k in self.expected:
-            db = shelve.open(os.path.join(self.db_dir, k+'.db'), flag='r')
+            db = shelve.open(os.path.join(self.db_dir, 
+                                          b64encode(md5(k).digest())[0]+'.db'), 
+                             flag='r')
             self.assertEqual(db[k], self.expected[k])
             
     def test_get(self):
